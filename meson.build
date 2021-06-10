@@ -5,6 +5,7 @@ boost_dep   = dependency('boost', version : '>=1.75')
 firebot_dep = dependency('firebot')
 
 edopro_firebot_src = files([
+	'src/client.cpp',
 	'src/main.cpp'
 ])
 
