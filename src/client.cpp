@@ -21,9 +21,9 @@ auto Client::do_read_header_() noexcept -> void
 	                             YGOPro::STOCMsg::HEADER_SIZE);
 	boost::asio::async_read(
 		socket_, b,
-		[&](boost::system::error_code ec, size_t /*unused*/)
+		[this](boost::system::error_code ec, size_t /*unused*/)
 		{
-			if(!ec)
+			if(ec)
 			{
 				std::cerr << "do_read_header_: " << ec.message() << '\n';
 				return;
@@ -39,9 +39,9 @@ auto Client::do_read_body_() noexcept -> void
 	auto b = boost::asio::buffer(incoming_.body_data(), incoming_.body_size());
 	boost::asio::async_read(
 		socket_, b,
-		[&](boost::system::error_code ec, size_t /*unused*/)
+		[this](boost::system::error_code ec, size_t /*unused*/)
 		{
-			if(!ec)
+			if(ec)
 			{
 				std::cerr << "do_read_body_: " << ec.message() << '\n';
 				return;
