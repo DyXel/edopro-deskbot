@@ -8,22 +8,14 @@
 #include <array>
 #include <cassert>
 #include <cstddef> // size_t
-#include <cstdint> // uint8_t, uint16_t, ...
 #include <cstring> // std::memcpy
 #include <tuple>
 #include <type_traits>
 
+#include "common_msg.hpp"
+
 namespace YGOPro
 {
-
-struct ClientVersion
-{
-	struct
-	{
-		uint8_t major;
-		uint8_t minor;
-	} client, core;
-};
 
 constexpr size_t PASS_NAME_MAX_LENGTH = 20U;
 constexpr size_t NOTES_MAX_LENGTH = 200U;
@@ -84,28 +76,7 @@ public:
 	struct CreateGame
 	{
 		static constexpr auto ID = IdType::CREATE_GAME;
-		struct HostInfo
-		{
-			uint32_t banlist_hash;
-			uint8_t allowed;
-			uint8_t mode;      // NOTE: UNUSED
-			uint8_t duel_rule; // NOTE: UNUSED
-			uint8_t dont_check_deck;
-			uint8_t dont_shuffle_deck;
-			uint32_t starting_lp;
-			uint8_t starting_draw_count;
-			uint8_t draw_count_per_turn;
-			uint16_t time_limit_in_seconds;
-			uint32_t duel_flags_high;
-			uint32_t handshake;
-			ClientVersion version;
-			int32_t t0_count;
-			int32_t t1_count;
-			int32_t best_of;
-			uint32_t duel_flags_low;
-			int32_t forbidden_types;
-			uint16_t extra_rules;
-		} host_info;
+		HostInfo host_info;
 		std::array<uint16_t, PASS_NAME_MAX_LENGTH> name;
 		std::array<uint16_t, PASS_NAME_MAX_LENGTH> pass;
 		std::array<char, NOTES_MAX_LENGTH> notes;

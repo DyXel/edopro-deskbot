@@ -8,8 +8,9 @@
 #include <array>
 #include <cassert>
 #include <cstddef> // size_t
-#include <cstdint> // uint8_t, uint16_t, ...
 #include <cstring> // std::memcpy
+
+#include "common_msg.hpp"
 
 namespace YGOPro
 {
@@ -54,6 +55,18 @@ public:
 		static constexpr auto ID = IdType::ERROR_MSG;
 		uint8_t msg;
 		uint32_t code;
+	};
+
+	struct JoinGame
+	{
+		static constexpr auto ID = IdType::JOIN_GAME;
+		HostInfo host_info;
+	};
+
+	struct TypeChange
+	{
+		static constexpr auto ID = IdType::TYPE_CHANGE;
+		uint8_t value;
 	};
 
 	constexpr STOCMsg() noexcept : bytes_() {}
