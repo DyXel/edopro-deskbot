@@ -6,6 +6,9 @@
 #ifndef EDOPRO_FIREBOT_STOCMSG_HPP
 #define EDOPRO_FIREBOT_STOCMSG_HPP
 #include <array>
+#include <cstddef> // size_t
+#include <cstdint> // uint8_t, uint16_t, ...
+#include <cstring> // std::memcpy
 
 namespace YGOPro
 {
@@ -21,21 +24,21 @@ public:
 
 	constexpr STOCMsg() noexcept : bytes_() {}
 
-	constexpr auto header_data() noexcept -> uint8_t* { return bytes_.data(); }
+	auto header_data() noexcept -> uint8_t* { return bytes_.data(); }
 
-	constexpr auto body_data() noexcept -> uint8_t*
+	auto body_data() noexcept -> uint8_t*
 	{
 		return bytes_.data() + HEADER_SIZE;
 	}
 
-	constexpr auto body_size() const noexcept -> SizeType
+	auto body_size() const noexcept -> SizeType
 	{
 		SizeType r{};
 		std::memcpy(&r, bytes_.data(), sizeof(SizeType));
 		return r;
 	}
 
-	constexpr auto type() const noexcept -> MsgType
+	auto type() const noexcept -> MsgType
 	{
 		MsgType r{};
 		std::memcpy(&r, bytes_.data() + sizeof(SizeType), sizeof(MsgType));
