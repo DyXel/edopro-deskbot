@@ -80,9 +80,11 @@ public:
 	template<typename T>
 	[[nodiscard]] auto as_fixed() const noexcept -> T
 	{
+		static_assert(std::is_standard_layout_v<T>);
+		assert(T::ID == type());
 		assert(body_size() == sizeof(T));
 		T r{};
-		std::memcpy(&r, body_data(), sizeof(IdType));
+		std::memcpy(&r, body_data(), sizeof(T));
 		return r;
 	}
 
