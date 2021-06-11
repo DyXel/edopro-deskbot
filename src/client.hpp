@@ -7,7 +7,9 @@
 #define EDOPRO_FIREBOT_CLIENT_HPP
 #include <boost/asio/ip/tcp.hpp>
 #include <firebot/api.hpp>
+#include <queue>
 
+#include "ctosmsg.hpp"
 #include "stocmsg.hpp"
 
 class Client
@@ -18,8 +20,12 @@ public:
 
 private:
 	YGOPro::STOCMsg incoming_;
+	std::queue<YGOPro::CTOSMsg> outgoing_;
 	boost::asio::ip::tcp::socket socket_;
 	Firebot::Core core_;
+
+	auto send_msg_(YGOPro::CTOSMsg&& msg) noexcept -> void;
+	auto do_write_() noexcept -> void;
 
 	auto do_read_header_() noexcept -> void;
 	auto do_read_body_() noexcept -> void;

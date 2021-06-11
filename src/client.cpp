@@ -6,13 +6,55 @@
 #include "client.hpp"
 
 #include <boost/asio/read.hpp>
+#include <boost/asio/write.hpp>
 #include <iostream>
 
 Client::Client(boost::asio::ip::tcp::socket socket,
                Firebot::Core::Options const& core_opts)
 	: socket_(std::move(socket)), core_(core_opts)
 {
+	{
+		auto player_info = YGOPro::CTOSMsg::PlayerInfo{};
+		player_info.name[0U] = 'D';
+		send_msg_(YGOPro::CTOSMsg::make_fixed(player_info));
+	}
+	{
+		auto create_game = YGOPro::CTOSMsg::CreateGame{};
+		create_game.host_info.handshake = 4043399681U;
+		create_game.host_info.version.client.major = 39U;
+		create_game.host_info.version.client.minor = 1U;
+		create_game.host_info.version.core.major = 9U;
+		create_game.host_info.version.core.minor = 0U;
+		send_msg_(YGOPro::CTOSMsg::make_fixed(create_game));
+	}
 	do_read_header_();
+}
+
+auto Client::send_msg_(YGOPro::CTOSMsg&& msg) noexcept -> void
+{
+	const bool write_in_progress = !outgoing_.empty();
+	outgoing_.emplace(msg);
+	if(!write_in_progress)
+		do_write_();
+}
+
+auto Client::do_write_() noexcept -> void
+{
+	auto const& msg = outgoing_.front();
+	auto b = boost::asio::buffer(msg.data(), msg.size());
+	boost::asio::async_write(
+		socket_, b,
+		[this](boost::system::error_code ec, size_t /*unused*/)
+		{
+			if(ec)
+			{
+				std::cerr << "do_write_: " << ec.message() << '\n';
+				return;
+			}
+			outgoing_.pop();
+			if(!outgoing_.empty())
+				do_write_();
+		});
 }
 
 auto Client::do_read_header_() noexcept -> void
