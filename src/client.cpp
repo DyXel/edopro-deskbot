@@ -55,9 +55,19 @@ auto Client::handle_msg_() noexcept -> bool
 {
 	switch(incoming_.type())
 	{
+	case YGOPro::STOCMsg::IdType::ERROR_MSG:
+	{
+		auto const error_msg = incoming_.as_fixed<YGOPro::STOCMsg::ErrorMsg>();
+		std::cerr << "Server reported error with type ";
+		std::cerr << static_cast<int>(error_msg.msg) << ' ';
+		std::cerr << "and code " << error_msg.code << '\n';
+		return false;
+	}
 	default:
 	{
-		std::cout << "Unknown message type: " << incoming_.type();
+		std::cout << "Unknown message type ";
+		std::cout << static_cast<int>(incoming_.type());
+		std::cout << " with size " << incoming_.body_size() << '\n';
 		break;
 	}
 	}

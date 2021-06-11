@@ -17,9 +17,9 @@ public:
 	       Firebot::Core::Options const& core_opts);
 
 private:
+	YGOPro::STOCMsg incoming_;
 	boost::asio::ip::tcp::socket socket_;
 	Firebot::Core core_;
-	YGOPro::STOCMsg incoming_;
 
 	auto do_read_header_() noexcept -> void;
 	auto do_read_body_() noexcept -> void;
