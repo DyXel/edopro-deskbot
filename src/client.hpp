@@ -24,6 +24,11 @@ private:
 	boost::asio::ip::tcp::socket socket_;
 	Firebot::Core core_;
 
+	bool hosting_;
+	uint8_t t0_count_;
+	uint8_t team_;
+	uint8_t duelist_;
+
 	auto send_msg_(YGOPro::CTOSMsg&& msg) noexcept -> void;
 	auto do_write_() noexcept -> void;
 

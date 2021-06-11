@@ -11,13 +11,19 @@
 
 Client::Client(boost::asio::ip::tcp::socket socket,
                Firebot::Core::Options const& core_opts)
-	: socket_(std::move(socket)), core_(core_opts)
+	: socket_(std::move(socket))
+	, core_(core_opts)
+	, hosting_(false)
+	, t0_count_(0)
+	, team_(0U)
+	, duelist_(0)
 {
 	{
 		auto player_info = YGOPro::CTOSMsg::PlayerInfo{};
-		player_info.name[0U] = 'D';
+		player_info.name[0U] = L'虚';
 		send_msg_(YGOPro::CTOSMsg::make_fixed(player_info));
 	}
+	if(hosting_)
 	{
 		auto create_game = YGOPro::CTOSMsg::CreateGame{};
 		create_game.host_info.handshake = 4043399681U;
@@ -26,6 +32,16 @@ Client::Client(boost::asio::ip::tcp::socket socket,
 		create_game.host_info.version.core.major = 9U;
 		create_game.host_info.version.core.minor = 0U;
 		send_msg_(YGOPro::CTOSMsg::make_fixed(create_game));
+	}
+	else
+	{
+		auto join_game = YGOPro::CTOSMsg::JoinGame{};
+		join_game.id = 1U;
+		join_game.version.client.major = 39U;
+		join_game.version.client.minor = 1U;
+		join_game.version.core.major = 9U;
+		join_game.version.core.minor = 0U;
+		send_msg_(YGOPro::CTOSMsg::make_fixed(join_game));
 	}
 	do_read_header_();
 }
@@ -95,23 +111,42 @@ auto Client::do_read_body_() noexcept -> void
 
 auto Client::handle_msg_() noexcept -> bool
 {
+	using namespace YGOPro;
 	switch(incoming_.type())
 	{
-	case YGOPro::STOCMsg::IdType::ERROR_MSG:
+	case STOCMsg::IdType::ERROR_MSG:
 	{
-		auto const error_msg = incoming_.as_fixed<YGOPro::STOCMsg::ErrorMsg>();
+		auto const error_msg = incoming_.as_fixed<STOCMsg::ErrorMsg>();
 		std::cerr << "Server reported error with type ";
 		std::cerr << static_cast<int>(error_msg.msg) << ' ';
 		std::cerr << "and code " << error_msg.code << '\n';
 		return false;
+	}
+	case STOCMsg::IdType::JOIN_GAME:
+	{
+		auto const join_game = incoming_.as_fixed<STOCMsg::JoinGame>();
+		t0_count_ = join_game.host_info.t0_count;
+		return true;
+	}
+	case STOCMsg::IdType::TYPE_CHANGE:
+	{
+		auto const type_change = incoming_.as_fixed<STOCMsg::TypeChange>();
+		uint8_t const index = (type_change.value & 0xFU); // NOLINT
+		if(index > 6U) // NOLINT
+		{
+			std::cout << "Room is full. Bailing out.\n";
+			return false;
+		}
+		team_ = static_cast<uint8_t>(index > t0_count_ - 1U);
+		duelist_ = (index > t0_count_ - 1U) ? index - t0_count_ : index;
+		return true;
 	}
 	default:
 	{
 		std::cout << "Unknown message type ";
 		std::cout << static_cast<int>(incoming_.type());
 		std::cout << " with size " << incoming_.body_size() << '\n';
-		break;
+		return true;
 	}
 	}
-	return true;
 }
