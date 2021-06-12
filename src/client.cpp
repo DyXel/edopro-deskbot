@@ -141,11 +141,6 @@ auto Client::handle_msg_() noexcept -> bool
 	}
 	case STOCMsg::IdType::CHOOSE_ORDER:
 	{
-		auto const core_options = Firebot::Core::Options{
-			script_,
-			false,
-		};
-		core_ = std::make_unique<Firebot::Core>(core_options);
 		auto turn_choice = CTOSMsg::TurnChoice{0U};
 		if(auto const first = core_->wants_first_turn(); first.has_value())
 		{
@@ -185,6 +180,15 @@ auto Client::handle_msg_() noexcept -> bool
 			send_msg_(msg);
 		}
 		send_msg_(CTOSMsg::make_fixed(CTOSMsg::Ready{}));
+		return true;
+	}
+	case STOCMsg::IdType::DUEL_START:
+	{
+		auto const core_options = Firebot::Core::Options{
+			script_,
+			false,
+		};
+		core_ = std::make_unique<Firebot::Core>(core_options);
 		return true;
 	}
 	case STOCMsg::IdType::DUEL_END:
