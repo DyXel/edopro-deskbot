@@ -20,6 +20,8 @@ class Core;
 
 }
 
+class EncodeContext;
+
 class Client
 {
 public:
@@ -51,6 +53,7 @@ private:
 	uint8_t duelist_;
 
 	std::unique_ptr<Firebot::Core> core_;
+	std::unique_ptr<EncodeContext> ctx_;
 
 	auto send_msg_(YGOPro::CTOSMsg msg) noexcept -> void;
 	auto do_write_() noexcept -> void;
@@ -59,6 +62,7 @@ private:
 	auto do_read_body_() noexcept -> void;
 
 	auto handle_msg_() noexcept -> bool;
+	auto analyze_(uint8_t const* buffer, size_t size) noexcept -> void;
 };
 
 #endif // EDOPRO_FIREBOT_CLIENT_HPP

@@ -3,12 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
+#include <google/protobuf/stubs/common.h>
+
 #include <array>
 #include <boost/asio/connect.hpp>
 #include <cstdio>
 #include <optional>
-
-#include <google/protobuf/stubs/common.h>
 
 #include "client.hpp"
 

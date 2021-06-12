@@ -5,10 +5,15 @@
  */
 #include "client.hpp"
 
+#include <google/protobuf/arena.h>
+
 #include <boost/asio/read.hpp>
 #include <boost/asio/write.hpp>
 #include <cstdio>
 #include <firebot/api.hpp>
+#include <ygopen/codec/encode_edo9300_ocgcore.hpp>
+
+#include "encode_context.hpp"
 
 constexpr uint32_t HANDSHAKE = 4043399681U;
 constexpr auto CLIENT_VERSION = YGOPro::ClientVersion{{39U, 1U}, {9U, 0U}};
@@ -118,6 +123,11 @@ auto Client::handle_msg_() noexcept -> bool
 	using namespace YGOPro;
 	switch(incoming_.type())
 	{
+	case STOCMsg::IdType::GAME_MSG:
+	{
+		analyze_(incoming_.body_data(), incoming_.body_size());
+		return true;
+	}
 	case STOCMsg::IdType::ERROR:
 	{
 		if(incoming_.body_size() == sizeof(STOCMsg::Error))
@@ -189,6 +199,7 @@ auto Client::handle_msg_() noexcept -> bool
 			false,
 		};
 		core_ = std::make_unique<Firebot::Core>(core_options);
+		ctx_ = std::make_unique<EncodeContext>();
 		return true;
 	}
 	case STOCMsg::IdType::DUEL_END:
@@ -216,5 +227,40 @@ auto Client::handle_msg_() noexcept -> bool
 		            incoming_.body_size());
 		return true;
 	}
+	}
+}
+
+auto Client::analyze_(uint8_t const* buffer, size_t size) noexcept -> void
+{
+	google::protobuf::Arena arena;
+	decltype(buffer) const sentry = buffer + size; // NOLINT
+	for(;;)
+	{
+		if(sentry == buffer || sentry < (buffer + 3U)) // NOLINT
+			break;
+		using namespace YGOpen::Codec;
+		auto r = Edo9300::OCGCore::encode_one(arena, buffer);
+		switch(r.state)
+		{
+		case EncodeOneResult::State::STATE_OK:
+		{
+			ctx_->parse(*r.msg);
+			core_->analyze(*r.msg);
+			break;
+		}
+		case EncodeOneResult::State::STATE_SPECIAL:
+		{
+			r = Edo9300::OCGCore::encode_one_special(arena, *ctx_, buffer);
+			if(r.state == EncodeOneResult::State::STATE_OK)
+			{
+				ctx_->parse(*r.msg);
+				core_->analyze(*r.msg);
+			}
+			break;
+		}
+		default:
+			break;
+		}
+		buffer += r.bytes_read; // NOLINT
 	}
 }
