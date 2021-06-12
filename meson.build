@@ -6,6 +6,7 @@ firebot_dep = dependency('firebot')
 
 edopro_firebot_src = files([
 	'src/client.cpp',
+	'src/encode_context.cpp',
 	'src/main.cpp'
 ])
 
