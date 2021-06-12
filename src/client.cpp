@@ -140,9 +140,9 @@ auto Client::handle_msg_() noexcept -> bool
 	}
 	default:
 	{
-		std::cout << "Unknown message type ";
-		std::cout << static_cast<int>(incoming_.type());
-		std::cout << " with size " << incoming_.body_size() << '\n';
+		std::cout << "Unknown message type 0x";
+		std::cout << std::hex << static_cast<int>(incoming_.type());
+		std::cout << std::dec << " with size " << incoming_.body_size() << '\n';
 		return true;
 	}
 	}
