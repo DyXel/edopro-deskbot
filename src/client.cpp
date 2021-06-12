@@ -113,11 +113,20 @@ auto Client::handle_msg_() noexcept -> bool
 	using namespace YGOPro;
 	switch(incoming_.type())
 	{
-	case STOCMsg::IdType::ERROR_MSG:
+	case STOCMsg::IdType::ERROR:
 	{
-		auto const error_msg = incoming_.as_fixed<STOCMsg::ErrorMsg>();
-		std::fprintf(stderr, "Server reported error 0x%X and code %i.\n",
-		             error_msg.msg, error_msg.code);
+		if(incoming_.body_size() == sizeof(STOCMsg::Error))
+		{
+			auto const error = incoming_.as_fixed<STOCMsg::Error>();
+			std::fprintf(stderr, "Server reported error 0x%X and code %u.\n",
+			             error.msg, error.code);
+		}
+		else // incoming_.body_size() == sizeof(STOCMsg::DeckError)
+		{
+			auto const deck_error = incoming_.as_fixed<STOCMsg::DeckError>();
+			std::fprintf(stderr, "Deck error 0x%X with code %u.\n",
+			             deck_error.msg, deck_error.code);
+		}
 		return false;
 	}
 	case STOCMsg::IdType::CHOOSE_RPS:

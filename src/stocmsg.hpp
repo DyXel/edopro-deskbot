@@ -22,7 +22,7 @@ public:
 	enum class IdType : uint8_t
 	{
 		GAME_MSG = 0x1,
-		ERROR_MSG = 0x2,
+		ERROR = 0x2,
 		CHOOSE_RPS = 0x3,
 		CHOOSE_ORDER = 0x4,
 		// RPS_RESULT    = 0x5,
@@ -37,23 +37,37 @@ public:
 		DUEL_END = 0x16,
 		// REPLAY        = 0x17,
 		// TIME_LIMIT    = 0x18,
-		PLAYER_ENTER = 0x20,
+		// PLAYER_ENTER = 0x20,
 		PLAYER_CHANGE = 0x21,
 		// WATCH_CHANGE  = 0x22,
 		// NEW_REPLAY    = 0x30,
 		// CATCHUP       = 0xF0,
 		REMATCH = 0xF1,
 		// REMATCH_WAIT  = 0xF2,
-		CHAT_2 = 0xF3,
+		// CHAT_2 = 0xF3,
 	};
 
 	static constexpr size_t HEADER_SIZE = sizeof(SizeType) + sizeof(IdType);
 	static constexpr size_t MAX_LENGTH = 1U << 14U;
 
-	struct ErrorMsg
+	struct Error
 	{
-		static constexpr auto ID = IdType::ERROR_MSG;
+		static constexpr auto ID = IdType::ERROR;
 		uint8_t msg;
+		uint32_t code;
+	};
+
+	struct DeckError
+	{
+		static constexpr auto ID = IdType::ERROR;
+		uint8_t msg;
+		uint32_t type;
+		struct
+		{
+			uint32_t got;
+			uint32_t min;
+			uint32_t max;
+		} count;
 		uint32_t code;
 	};
 
