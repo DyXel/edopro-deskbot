@@ -119,6 +119,16 @@ auto Client::handle_msg_() noexcept -> bool
 		std::cerr << "and code " << error_msg.code << '\n';
 		return false;
 	}
+	case STOCMsg::IdType::CHOOSE_RPS:
+	{
+		send_msg_(CTOSMsg::make_fixed(CTOSMsg::RPSChoice{1U}));
+		return true;
+	}
+	case STOCMsg::IdType::CHOOSE_ORDER:
+	{
+		send_msg_(CTOSMsg::make_fixed(CTOSMsg::TurnChoice{0U}));
+		return true;
+	}
 	case STOCMsg::IdType::JOIN_GAME:
 	{
 		auto const join_game = incoming_.as_fixed<STOCMsg::JoinGame>();
@@ -136,6 +146,16 @@ auto Client::handle_msg_() noexcept -> bool
 		}
 		team_ = static_cast<uint8_t>(index > t0_count_ - 1U);
 		duelist_ = (index > t0_count_ - 1U) ? index - t0_count_ : index;
+		// TODO: Send deck.
+		send_msg_(CTOSMsg::make_fixed(CTOSMsg::Ready{}));
+		return true;
+	}
+	case STOCMsg::IdType::PLAYER_CHANGE:
+	{
+		auto const player_change = incoming_.as_fixed<STOCMsg::PlayerChange>();
+		bool const ready = (player_change.value & 0xFU) == 0x9U; // NOLINT
+		if(ready && hosting_)
+			send_msg_(CTOSMsg::make_fixed(CTOSMsg::TryStart{}));
 		return true;
 	}
 	default:

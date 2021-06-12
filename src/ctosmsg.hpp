@@ -91,6 +91,16 @@ public:
 		ClientVersion version;
 	};
 
+	struct Ready
+	{
+		static constexpr auto ID = IdType::READY;
+	};
+
+	struct TryStart
+	{
+		static constexpr auto ID = IdType::TRY_START;
+	};
+
 	struct Rematch
 	{
 		static constexpr auto ID = IdType::REMATCH;
@@ -128,8 +138,8 @@ public:
 	[[nodiscard]] auto data() const noexcept -> uint8_t const*
 	{
 		// Make sure we've written something before attempting to access the
-		// full buffer.
-		assert(body_size_() != 0U);
+		// full buffer if message is dynamic.
+		assert(!dynamic_ || body_size_() != 0U);
 		return bytes_.data();
 	}
 

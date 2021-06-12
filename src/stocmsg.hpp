@@ -69,6 +69,12 @@ public:
 		uint8_t value;
 	};
 
+	struct PlayerChange
+	{
+		static constexpr auto ID = IdType::PLAYER_CHANGE;
+		uint8_t value;
+	};
+
 	constexpr STOCMsg() noexcept : bytes_() {}
 
 	[[nodiscard]] auto body_data() const noexcept -> uint8_t const*
