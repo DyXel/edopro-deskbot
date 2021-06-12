@@ -7,7 +7,7 @@
 
 #include <boost/asio/read.hpp>
 #include <boost/asio/write.hpp>
-#include <iostream>
+#include <cstdio>
 
 constexpr uint32_t HANDSHAKE = 4043399681U;
 constexpr auto CLIENT_VERSION = YGOPro::ClientVersion{{39U, 1U}, {9U, 0U}};
@@ -61,7 +61,7 @@ auto Client::do_write_() noexcept -> void
 		{
 			if(ec)
 			{
-				std::cerr << "do_write_: " << ec.message() << '\n';
+				std::fprintf(stderr, "do_write_: %s\n", ec.message().data());
 				return;
 			}
 			outgoing_.pop();
@@ -80,7 +80,8 @@ auto Client::do_read_header_() noexcept -> void
 		{
 			if(ec)
 			{
-				std::cerr << "do_read_header_: " << ec.message() << '\n';
+				std::fprintf(stderr, "do_read_header_: %s\n",
+			                 ec.message().data());
 				return;
 			}
 			do_read_body_();
@@ -98,7 +99,8 @@ auto Client::do_read_body_() noexcept -> void
 		{
 			if(ec)
 			{
-				std::cerr << "do_read_body_: " << ec.message() << '\n';
+				std::fprintf(stderr, "do_read_body_: %s\n",
+			                 ec.message().data());
 				return;
 			}
 			if(handle_msg_())
@@ -114,9 +116,8 @@ auto Client::handle_msg_() noexcept -> bool
 	case STOCMsg::IdType::ERROR_MSG:
 	{
 		auto const error_msg = incoming_.as_fixed<STOCMsg::ErrorMsg>();
-		std::cerr << "Server reported error with type ";
-		std::cerr << static_cast<int>(error_msg.msg) << ' ';
-		std::cerr << "and code " << error_msg.code << '\n';
+		std::fprintf(stderr, "Server reported error 0x%X and code %i.\n",
+		             error_msg.msg, error_msg.code);
 		return false;
 	}
 	case STOCMsg::IdType::CHOOSE_RPS:
@@ -141,7 +142,7 @@ auto Client::handle_msg_() noexcept -> bool
 		uint8_t index = (type_change.value & 0xFU); // NOLINT
 		if(index > 6U)                              // NOLINT
 		{
-			std::cout << "Room is full. Bailing out.\n";
+			std::printf("Room is full. Bailing out.\n");
 			return false;
 		}
 		team_ = static_cast<uint8_t>(index > t0_count_ - 1U);
@@ -160,9 +161,9 @@ auto Client::handle_msg_() noexcept -> bool
 	}
 	default:
 	{
-		std::cout << "Unknown message type 0x";
-		std::cout << std::hex << static_cast<int>(incoming_.type());
-		std::cout << std::dec << " with size " << incoming_.body_size() << '\n';
+		std::printf("Unknown message 0x%X, with size %i.\n",
+		            static_cast<unsigned int>(incoming_.type()),
+		            incoming_.body_size());
 		return true;
 	}
 	}

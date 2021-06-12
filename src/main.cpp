@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 #include <boost/asio/connect.hpp>
-#include <iostream>
+#include <cstdio>
 #include <string_view>
 
 #include "client.hpp"
@@ -25,7 +25,7 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) -> int
 	}
 	catch(std::exception& e)
 	{
-		std::cerr << "Error while initializing client: " << e.what() << "\n";
+		std::fprintf(stderr, "Error while initializing client: %s\n", e.what());
 		return 1;
 	}
 	io_context.run();
