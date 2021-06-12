@@ -61,7 +61,7 @@ auto Client::do_write_() noexcept -> void
 		{
 			if(ec)
 			{
-				std::fprintf(stderr, "do_write_: %s\n", ec.message().data());
+				std::fprintf(stderr, "do_write_: %s.\n", ec.message().data());
 				return;
 			}
 			outgoing_.pop();
@@ -80,7 +80,7 @@ auto Client::do_read_header_() noexcept -> void
 		{
 			if(ec)
 			{
-				std::fprintf(stderr, "do_read_header_: %s\n",
+				std::fprintf(stderr, "do_read_header_: %s.\n",
 			                 ec.message().data());
 				return;
 			}
@@ -99,7 +99,7 @@ auto Client::do_read_body_() noexcept -> void
 		{
 			if(ec)
 			{
-				std::fprintf(stderr, "do_read_body_: %s\n",
+				std::fprintf(stderr, "do_read_body_: %s.\n",
 			                 ec.message().data());
 				return;
 			}
@@ -142,7 +142,7 @@ auto Client::handle_msg_() noexcept -> bool
 		uint8_t index = (type_change.value & 0xFU); // NOLINT
 		if(index > 6U)                              // NOLINT
 		{
-			std::printf("Room is full. Bailing out.\n");
+			std::fprintf(stderr, "Room is full. Bailing out.\n");
 			return false;
 		}
 		team_ = static_cast<uint8_t>(index > t0_count_ - 1U);
@@ -157,6 +157,11 @@ auto Client::handle_msg_() noexcept -> bool
 		bool const ready = (player_change.value & 0xFU) == 0x9U; // NOLINT
 		if(ready && hosting_)
 			send_msg_(CTOSMsg::make_fixed(CTOSMsg::TryStart{}));
+		return true;
+	}
+	case STOCMsg::IdType::REMATCH:
+	{
+		send_msg_(CTOSMsg::make_fixed(CTOSMsg::Rematch{1U}));
 		return true;
 	}
 	default:
