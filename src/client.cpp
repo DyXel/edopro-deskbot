@@ -151,6 +151,11 @@ auto Client::handle_msg_() noexcept -> bool
 		send_msg_(CTOSMsg::make_fixed(CTOSMsg::Ready{}));
 		return true;
 	}
+	case STOCMsg::IdType::DUEL_END:
+	{
+		std::printf("All duels ended. Good Bye!\n");
+		return false;
+	}
 	case STOCMsg::IdType::PLAYER_CHANGE:
 	{
 		auto const player_change = incoming_.as_fixed<STOCMsg::PlayerChange>();
