@@ -8,6 +8,8 @@
 #include <cstdio>
 #include <optional>
 
+#include <google/protobuf/stubs/common.h>
+
 #include "client.hpp"
 
 static std::array const infinitrains_deck{
@@ -23,6 +25,7 @@ static std::array const infinitrains_deck{
 
 auto main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) -> int
 {
+	GOOGLE_PROTOBUF_VERIFY_VERSION;
 	auto const host = std::string_view("localhost");
 	auto const port = std::string_view("7911");
 	boost::asio::io_context io_context;
@@ -44,5 +47,6 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) -> int
 		return 1;
 	}
 	io_context.run();
+	google::protobuf::ShutdownProtobufLibrary();
 	return 0;
 }
