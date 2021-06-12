@@ -29,7 +29,7 @@ private:
 	uint8_t team_;
 	uint8_t duelist_;
 
-	auto send_msg_(YGOPro::CTOSMsg&& msg) noexcept -> void;
+	auto send_msg_(YGOPro::CTOSMsg msg) noexcept -> void;
 	auto do_write_() noexcept -> void;
 
 	auto do_read_header_() noexcept -> void;

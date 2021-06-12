@@ -43,8 +43,10 @@ Client::Client(boost::asio::ip::tcp::socket socket,
 	do_read_header_();
 }
 
-auto Client::send_msg_(YGOPro::CTOSMsg&& msg) noexcept -> void
+auto Client::send_msg_(YGOPro::CTOSMsg msg) noexcept -> void
 {
+	// No need for std::move as long as type is trivially copyable.
+	static_assert(std::is_trivially_copyable_v<YGOPro::CTOSMsg>);
 	const bool write_in_progress = !outgoing_.empty();
 	outgoing_.emplace(msg);
 	if(!write_in_progress)
