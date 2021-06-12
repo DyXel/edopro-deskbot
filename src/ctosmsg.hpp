@@ -147,7 +147,7 @@ public:
 	{
 		assert(dynamic_);
 		assert(body_size_() + size <= MAX_LENGTH);
-		auto const body_size = body_size_();
+		auto const body_size = std::max(SizeType{0}, body_size_());
 		std::memcpy(
 			bytes_.data() + sizeof(SizeType) + sizeof(IdType) + body_size, ptr,
 			size);
@@ -160,7 +160,7 @@ public:
 		static_assert(std::is_standard_layout_v<T>);
 		assert(dynamic_);
 		assert(body_size_() + sizeof(T) <= MAX_LENGTH);
-		auto const body_size = body_size_();
+		auto const body_size = std::max(SizeType{0}, body_size_());
 		std::memcpy(
 			bytes_.data() + sizeof(SizeType) + sizeof(IdType) + body_size, &t,
 			sizeof(T));
