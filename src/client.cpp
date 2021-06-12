@@ -251,12 +251,22 @@ auto Client::analyze_(uint8_t const* buffer, size_t size) noexcept -> void
 		case EncodeOneResult::State::STATE_SPECIAL:
 		{
 			r = Edo9300::OCGCore::encode_one_special(arena, *ctx_, buffer);
+			if(r.state == EncodeOneResult::State::STATE_UNKNOWN)
+			{
+				std::fprintf(stderr, "Special encoding failed: %i.\n", *buffer);
+				return;
+			}
 			if(r.state == EncodeOneResult::State::STATE_OK)
 			{
 				ctx_->parse(*r.msg);
 				core_->analyze(*r.msg);
 			}
 			break;
+		}
+		case EncodeOneResult::State::STATE_UNKNOWN:
+		{
+			std::fprintf(stderr, "Regular encoding failed: %i.\n", *buffer);
+			return;
 		}
 		default:
 			break;
