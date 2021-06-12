@@ -9,6 +9,9 @@
 #include <boost/asio/write.hpp>
 #include <iostream>
 
+constexpr uint32_t HANDSHAKE = 4043399681U;
+constexpr auto CLIENT_VERSION = YGOPro::ClientVersion{{39U, 1U}, {9U, 0U}};
+
 Client::Client(boost::asio::ip::tcp::socket socket,
                Firebot::Core::Options const& core_opts)
 	: socket_(std::move(socket))
@@ -26,21 +29,15 @@ Client::Client(boost::asio::ip::tcp::socket socket,
 	if(hosting_)
 	{
 		auto create_game = YGOPro::CTOSMsg::CreateGame{};
-		create_game.host_info.handshake = 4043399681U;
-		create_game.host_info.version.client.major = 39U;
-		create_game.host_info.version.client.minor = 1U;
-		create_game.host_info.version.core.major = 9U;
-		create_game.host_info.version.core.minor = 0U;
+		create_game.host_info.handshake = HANDSHAKE;
+		create_game.host_info.version = CLIENT_VERSION;
 		send_msg_(YGOPro::CTOSMsg::make_fixed(create_game));
 	}
 	else
 	{
 		auto join_game = YGOPro::CTOSMsg::JoinGame{};
 		join_game.id = 1U;
-		join_game.version.client.major = 39U;
-		join_game.version.client.minor = 1U;
-		join_game.version.core.major = 9U;
-		join_game.version.core.minor = 0U;
+		join_game.version = CLIENT_VERSION;
 		send_msg_(YGOPro::CTOSMsg::make_fixed(join_game));
 	}
 	do_read_header_();
@@ -131,8 +128,8 @@ auto Client::handle_msg_() noexcept -> bool
 	case STOCMsg::IdType::TYPE_CHANGE:
 	{
 		auto const type_change = incoming_.as_fixed<STOCMsg::TypeChange>();
-		uint8_t const index = (type_change.value & 0xFU); // NOLINT
-		if(index > 6U) // NOLINT
+		uint8_t index = (type_change.value & 0xFU); // NOLINT
+		if(index > 6U)                              // NOLINT
 		{
 			std::cout << "Room is full. Bailing out.\n";
 			return false;
