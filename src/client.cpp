@@ -8,14 +8,15 @@
 #include <boost/asio/read.hpp>
 #include <boost/asio/write.hpp>
 #include <cstdio>
+#include <firebot/api.hpp>
 
 constexpr uint32_t HANDSHAKE = 4043399681U;
 constexpr auto CLIENT_VERSION = YGOPro::ClientVersion{{39U, 1U}, {9U, 0U}};
 
-Client::Client(boost::asio::ip::tcp::socket socket,
-               Firebot::Core::Options const& core_opts)
+Client::Client(boost::asio::ip::tcp::socket socket, Options const& options)
 	: socket_(std::move(socket))
-	, core_(core_opts)
+	, deck_(options.deck_ptr, options.deck_ptr + options.deck_size)
+	, script_(options.script)
 	, hosting_(false)
 	, t0_count_(0)
 	, team_(0U)
@@ -42,6 +43,8 @@ Client::Client(boost::asio::ip::tcp::socket socket,
 	}
 	do_read_header_();
 }
+
+Client::~Client() = default;
 
 auto Client::send_msg_(YGOPro::CTOSMsg msg) noexcept -> void
 {
@@ -138,7 +141,22 @@ auto Client::handle_msg_() noexcept -> bool
 	}
 	case STOCMsg::IdType::CHOOSE_ORDER:
 	{
-		send_msg_(CTOSMsg::make_fixed(CTOSMsg::TurnChoice{0U}));
+		auto const core_options = Firebot::Core::Options{
+			script_,
+			false,
+		};
+		core_ = std::make_unique<Firebot::Core>(core_options);
+		auto turn_choice = CTOSMsg::TurnChoice{0U};
+		if(auto const first = core_->wants_first_turn(); first.has_value())
+		{
+			turn_choice.value = static_cast<uint8_t>(*first);
+		}
+		else
+		{
+			// Indiferent. Randomly decide.
+			// TODO.
+		}
+		send_msg_(CTOSMsg::make_fixed(turn_choice));
 		return true;
 	}
 	case STOCMsg::IdType::JOIN_GAME:
@@ -158,7 +176,14 @@ auto Client::handle_msg_() noexcept -> bool
 		}
 		team_ = static_cast<uint8_t>(index > t0_count_ - 1U);
 		duelist_ = (index > t0_count_ - 1U) ? index - t0_count_ : index;
-		// TODO: Send deck.
+		{
+			auto msg = CTOSMsg::make_dynamic(CTOSMsg::IdType::UPDATE_DECK);
+			msg.write(static_cast<uint32_t>(deck_.size()));
+			msg.write<uint32_t>(0U); // No sidedeck for now.
+			for(auto card_code : deck_)
+				msg.write<uint32_t>(card_code);
+			send_msg_(msg);
+		}
 		send_msg_(CTOSMsg::make_fixed(CTOSMsg::Ready{}));
 		return true;
 	}

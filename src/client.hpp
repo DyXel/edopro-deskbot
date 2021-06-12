@@ -6,28 +6,51 @@
 #ifndef EDOPRO_FIREBOT_CLIENT_HPP
 #define EDOPRO_FIREBOT_CLIENT_HPP
 #include <boost/asio/ip/tcp.hpp>
-#include <firebot/api.hpp>
+#include <memory>
 #include <queue>
+#include <string_view>
 
 #include "ctosmsg.hpp"
 #include "stocmsg.hpp"
 
+namespace Firebot
+{
+
+class Core;
+
+}
+
 class Client
 {
 public:
-	Client(boost::asio::ip::tcp::socket socket,
-	       Firebot::Core::Options const& core_opts);
+	struct Options
+	{
+		uint32_t const* deck_ptr;
+		size_t deck_size;
+		std::string_view script;
+	};
+
+	Client(boost::asio::ip::tcp::socket socket, Options const& options);
+	~Client();
+
+	Client(const Client&) = delete;
+	constexpr Client(Client&&) noexcept = delete;
+	auto operator=(const Client&) -> Client& = delete;
+	constexpr auto operator=(Client&&) noexcept -> Client& = delete;
 
 private:
 	YGOPro::STOCMsg incoming_;
 	std::queue<YGOPro::CTOSMsg> outgoing_;
 	boost::asio::ip::tcp::socket socket_;
-	Firebot::Core core_;
 
+	std::vector<uint32_t> deck_;
+	std::string script_;
 	bool hosting_;
 	uint8_t t0_count_;
 	uint8_t team_;
 	uint8_t duelist_;
+
+	std::unique_ptr<Firebot::Core> core_;
 
 	auto send_msg_(YGOPro::CTOSMsg msg) noexcept -> void;
 	auto do_write_() noexcept -> void;
