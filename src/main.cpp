@@ -23,6 +23,12 @@ static std::array const infinitrains_deck{
 	56910167U, 90162951U, 97584719U, 24701066U, 1'46'746U, 23689428U,
 };
 
+static std::string_view const test_script = R"(
+function AI.OnInitialize()
+	return true
+end
+)";
+
 auto main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) -> int
 {
 	GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -39,10 +45,11 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) -> int
 		client.emplace(
 			std::move(socket),
 			Client::Options{infinitrains_deck.data(), infinitrains_deck.size(),
-		                    std::string_view()});
+		                    test_script});
 	}
 	catch(std::exception& e)
 	{
+		google::protobuf::ShutdownProtobufLibrary();
 		std::fprintf(stderr, "Error while initializing client: %s\n", e.what());
 		return 1;
 	}
