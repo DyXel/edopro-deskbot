@@ -11,7 +11,7 @@
 #include <boost/asio/write.hpp>
 #include <cstdio>
 #include <firebot/api.hpp>
-#include <ygopen/codec/encode_edo9300_ocgcore.hpp>
+#include <ygopen/codec/edo9300_ocgcore_encode.hpp>
 
 #include "encode_context.hpp"
 
@@ -53,9 +53,9 @@ Client::~Client() = default;
 
 auto Client::send_msg_(YGOPro::CTOSMsg msg) noexcept -> void
 {
-	// std::is_trivial seems to be bugged in visual studio
-	// and that carries on to all the functions relying on it.
-	// Disabling this check when building with visual studio
+	// std::is_trivial seems to be bugged in Visual Studio and that carries on
+	// to all the functions relying on it. Disable this check when building with
+	// Visual Studio.
 #ifndef _MSC_VER
 	// No need for std::move as long as type is trivially copyable.
 	static_assert(std::is_trivially_copyable_v<YGOPro::CTOSMsg>);
@@ -163,7 +163,7 @@ auto Client::handle_msg_() noexcept -> bool
 		}
 		else
 		{
-			// Indiferent. Randomly decide.
+			// Indifferent. Randomly decide.
 			// TODO.
 		}
 		send_msg_(CTOSMsg::make_fixed(turn_choice));
