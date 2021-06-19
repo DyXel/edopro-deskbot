@@ -3,11 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
-#include <google/protobuf/stubs/common.h>
-
 #include <array>
 #include <boost/asio/connect.hpp>
 #include <cstdio>
+#include <fstream>
+#include <google/protobuf/stubs/common.h>
 #include <optional>
 
 #include "client.hpp"
@@ -29,7 +29,21 @@ function AI.OnInitialize()
 end
 )";
 
-auto main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) -> int
+// Yoinked from: https://stackoverflow.com/a/116220
+auto read_file(std::string_view path) -> std::string
+{
+	constexpr auto read_size = std::size_t{4096};
+	auto stream = std::ifstream{path.data()};
+	stream.exceptions(std::ios_base::badbit);
+	auto out = std::string{""};
+	auto buf = std::string(read_size, '\0');
+	while(stream.read(&buf[0], read_size))
+		out.append(buf, 0, stream.gcount());
+	out.append(buf, 0, stream.gcount());
+	return out;
+}
+
+auto main(int argc, char* argv[]) -> int
 {
 	GOOGLE_PROTOBUF_VERIFY_VERSION;
 	auto const host = std::string_view("localhost");
@@ -45,7 +59,7 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) -> int
 		client.emplace(
 			std::move(socket),
 			Client::Options{infinitrains_deck.data(), infinitrains_deck.size(),
-		                    test_script});
+		                    read_file(argv[argc - 1])});
 	}
 	catch(std::exception& e)
 	{
