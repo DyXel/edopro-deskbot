@@ -52,6 +52,7 @@ private:
 	uint8_t team_;
 	uint8_t duelist_;
 
+	std::vector<uint8_t> answer_buffer_;
 	std::unique_ptr<Firebot::Core> core_;
 	std::unique_ptr<EncodeContext> ctx_;
 

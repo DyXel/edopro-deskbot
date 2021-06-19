@@ -5,16 +5,18 @@
  */
 #include "client.hpp"
 
-#include <google/protobuf/arena.h>
-
 #include <boost/asio/read.hpp>
 #include <boost/asio/write.hpp>
 #include <cstdio>
 #include <firebot/api.hpp>
+#include <google/protobuf/arena.h>
+#include <ygopen/proto/duel/answer.hpp>
+#include <ygopen/codec/edo9300_ocgcore_decode.hpp>
 #include <ygopen/codec/edo9300_ocgcore_encode.hpp>
 
 #include "encode_context.hpp"
 
+constexpr size_t ANSWER_BUFFER_RESERVE = 1U << 8U;
 constexpr uint32_t HANDSHAKE = 4043399681U;
 constexpr auto CLIENT_VERSION = YGOPro::ClientVersion{{39U, 1U}, {9U, 0U}};
 
@@ -27,6 +29,7 @@ Client::Client(boost::asio::ip::tcp::socket socket, Options const& options)
 	, team_(0U)
 	, duelist_(0)
 {
+	answer_buffer_.reserve(ANSWER_BUFFER_RESERVE);
 	{
 		auto player_info = YGOPro::CTOSMsg::PlayerInfo{};
 		player_info.name[0U] = L'虚';
@@ -237,6 +240,21 @@ auto Client::handle_msg_() noexcept -> bool
 
 auto Client::analyze_(uint8_t const* buffer, size_t size) noexcept -> void
 {
+	auto analyze_and_answer = [&](YGOpen::Proto::Duel::Msg const& msg)
+	{
+		ctx_->parse(msg);
+		core_->analyze(msg);
+		if(msg.t_case() != YGOpen::Proto::Duel::Msg::kRequest)
+			return;
+		auto const& req = msg.request();
+		auto const answer = core_->answer(req);
+		using namespace YGOpen::Codec;
+		Edo9300::OCGCore::decode_one_answer(req, answer, answer_buffer_);
+		assert(!answer_buffer_.empty());
+		auto ctosmsg = YGOPro::CTOSMsg::make_dynamic(YGOPro::CTOSMsg::RESPONSE);
+		ctosmsg.write(answer_buffer_.data(), answer_buffer_.size());
+		send_msg_(ctosmsg);
+	};
 	google::protobuf::Arena arena;
 	decltype(buffer) const sentry = buffer + size; // NOLINT
 	for(;;)
@@ -249,8 +267,7 @@ auto Client::analyze_(uint8_t const* buffer, size_t size) noexcept -> void
 		{
 		case EncodeOneResult::State::OK:
 		{
-			ctx_->parse(*r.msg);
-			core_->analyze(*r.msg);
+			analyze_and_answer(*r.msg);
 			break;
 		}
 		case EncodeOneResult::State::SPECIAL:
@@ -262,10 +279,7 @@ auto Client::analyze_(uint8_t const* buffer, size_t size) noexcept -> void
 				return;
 			}
 			if(r.state == EncodeOneResult::State::OK)
-			{
-				ctx_->parse(*r.msg);
-				core_->analyze(*r.msg);
-			}
+				analyze_and_answer(*r.msg);
 			break;
 		}
 		case EncodeOneResult::State::UNKNOWN:
