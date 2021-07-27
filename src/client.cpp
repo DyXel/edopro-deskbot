@@ -23,11 +23,11 @@ constexpr auto CLIENT_VERSION = YGOPro::ClientVersion{{39U, 1U}, {9U, 0U}};
 Client::Client(boost::asio::ip::tcp::socket socket, Options const& options)
 	: socket_(std::move(socket))
 	, deck_(options.deck_ptr, options.deck_ptr + options.deck_size)
-	, script_(options.script)
 	, hosting_(false)
 	, t0_count_(0)
 	, team_(0U)
 	, duelist_(0)
+	, core_(std::make_unique<Firebot::Core>(Firebot::Core::Options{false}))
 {
 	answer_buffer_.reserve(ANSWER_BUFFER_RESERVE);
 	{
@@ -53,6 +53,11 @@ Client::Client(boost::asio::ip::tcp::socket socket, Options const& options)
 }
 
 Client::~Client() = default;
+
+auto Client::process_script(std::string_view script) noexcept -> bool
+{
+	return core_->process_script(script);
+}
 
 auto Client::send_msg_(YGOPro::CTOSMsg msg) noexcept -> void
 {
@@ -202,11 +207,7 @@ auto Client::handle_msg_() noexcept -> bool
 	}
 	case STOCMsg::IdType::DUEL_START:
 	{
-		auto const core_options = Firebot::Core::Options{
-			script_,
-			false,
-		};
-		core_ = std::make_unique<Firebot::Core>(core_options);
+		core_->call_initialize();
 		ctx_ = std::make_unique<EncodeContext>();
 		return true;
 	}

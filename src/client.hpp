@@ -29,7 +29,6 @@ public:
 	{
 		uint32_t const* deck_ptr;
 		size_t deck_size;
-		std::string_view script;
 	};
 
 	Client(boost::asio::ip::tcp::socket socket, Options const& options);
@@ -40,13 +39,14 @@ public:
 	auto operator=(const Client&) -> Client& = delete;
 	constexpr auto operator=(Client&&) noexcept -> Client& = delete;
 
+	auto process_script(std::string_view script) noexcept -> bool;
+
 private:
 	YGOPro::STOCMsg incoming_;
 	std::queue<YGOPro::CTOSMsg> outgoing_;
 	boost::asio::ip::tcp::socket socket_;
 
 	std::vector<uint32_t> deck_;
-	std::string script_;
 	bool hosting_;
 	uint8_t t0_count_;
 	uint8_t team_;

@@ -58,8 +58,7 @@ auto main(int argc, char* argv[]) -> int
 		boost::asio::connect(socket, endpoints);
 		client.emplace(
 			std::move(socket),
-			Client::Options{infinitrains_deck.data(), infinitrains_deck.size(),
-		                    read_file(argv[argc - 1])});
+			Client::Options{infinitrains_deck.data(), infinitrains_deck.size()});
 	}
 	catch(std::exception& e)
 	{
@@ -67,6 +66,7 @@ auto main(int argc, char* argv[]) -> int
 		std::fprintf(stderr, "Error while initializing client: %s\n", e.what());
 		return 1;
 	}
+	client->process_script(read_file(argv[argc - 1]));
 	io_context.run();
 	google::protobuf::ShutdownProtobufLibrary();
 	return 0;
