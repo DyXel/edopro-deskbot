@@ -1,7 +1,6 @@
 #include "encode_context.hpp"
 
-EncodeContext::EncodeContext() noexcept
-	: match_win_reason_(0)
+EncodeContext::EncodeContext() noexcept : match_win_reason_(0)
 {}
 
 EncodeContext::~EncodeContext() noexcept = default;

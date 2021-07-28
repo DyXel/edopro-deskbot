@@ -56,9 +56,9 @@ auto main(int argc, char* argv[]) -> int
 		auto endpoints = resolver.resolve(host, port);
 		boost::asio::ip::tcp::socket socket(io_context);
 		boost::asio::connect(socket, endpoints);
-		client.emplace(
-			std::move(socket),
-			Client::Options{infinitrains_deck.data(), infinitrains_deck.size()});
+		client.emplace(std::move(socket),
+		               Client::Options{infinitrains_deck.data(),
+		                               infinitrains_deck.size()});
 	}
 	catch(std::exception& e)
 	{

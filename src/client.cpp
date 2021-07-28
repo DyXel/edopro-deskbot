@@ -10,9 +10,9 @@
 #include <cstdio>
 #include <firebot/api.hpp>
 #include <google/protobuf/arena.h>
-#include <ygopen/proto/duel/answer.hpp>
 #include <ygopen/codec/edo9300_ocgcore_decode.hpp>
 #include <ygopen/codec/edo9300_ocgcore_encode.hpp>
+#include <ygopen/proto/duel/answer.hpp>
 
 #include "encode_context.hpp"
 
@@ -27,7 +27,8 @@ Client::Client(boost::asio::ip::tcp::socket socket, Options const& options)
 	, t0_count_(0)
 	, team_(0U)
 	, duelist_(0)
-	, core_(std::make_unique<Firebot::Core>(Firebot::Core::Options{false}))
+	, core_(std::make_unique<Firebot::Core>(
+		  Firebot::Core::Options{false, nullptr, nullptr}))
 {
 	answer_buffer_.reserve(ANSWER_BUFFER_RESERVE);
 	{

@@ -6,7 +6,6 @@
 #ifndef EDOPRO_FIREBOT_ENCODE_CONTEXT_HPP
 #define EDOPRO_FIREBOT_ENCODE_CONTEXT_HPP
 #include <google/protobuf/arena.h>
-
 #include <ygopen/client/board.hpp>
 #include <ygopen/client/card.hpp>
 #include <ygopen/client/frame.hpp>
