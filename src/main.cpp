@@ -23,12 +23,6 @@ static std::array const infinitrains_deck{
 	56910167U, 90162951U, 97584719U, 24701066U, 1'46'746U, 23689428U,
 };
 
-static std::string_view const test_script = R"(
-function AI.OnInitialize()
-	return true
-end
-)";
-
 // Yoinked from: https://stackoverflow.com/a/116220
 auto read_file(std::string_view path) -> std::string
 {
