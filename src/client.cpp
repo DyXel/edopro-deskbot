@@ -267,7 +267,7 @@ auto Client::analyze_(uint8_t const* buffer, size_t size) noexcept -> void
 	using namespace YGOpen::Codec;
 	uint8_t const core_msg = *buffer;
 	assert(core_msg != 1U); // NOLINT: MSG_RETRY
-	if(core_msg == 3U) // NOLINT: MSG_WAITING
+	if(core_msg == 3U)      // NOLINT: MSG_WAITING
 		return;
 	auto const r = Edo9300::OCGCore::encode_one(arena, *ctx_, buffer);
 	switch(r.state)
