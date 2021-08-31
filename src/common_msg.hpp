@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
-#ifndef EDOPRO_FIREBOT_COMMON_MSG_HPP
-#define EDOPRO_FIREBOT_COMMON_MSG_HPP
+#ifndef EDOPRO_DESKBOT_COMMON_MSG_HPP
+#define EDOPRO_DESKBOT_COMMON_MSG_HPP
 #include <cstdint> // uint8_t, uint16_t, ...
 
 namespace YGOPro
@@ -44,4 +44,4 @@ struct HostInfo
 
 } // namespace YGOPro
 
-#endif // EDOPRO_FIREBOT_COMMON_MSG_HPP
+#endif // EDOPRO_DESKBOT_COMMON_MSG_HPP

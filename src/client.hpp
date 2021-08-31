@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
-#ifndef EDOPRO_FIREBOT_CLIENT_HPP
-#define EDOPRO_FIREBOT_CLIENT_HPP
+#ifndef EDOPRO_DESKBOT_CLIENT_HPP
+#define EDOPRO_DESKBOT_CLIENT_HPP
 #include <boost/asio/ip/tcp.hpp>
 #include <memory>
 #include <queue>
@@ -13,7 +13,7 @@
 #include "ctosmsg.hpp"
 #include "stocmsg.hpp"
 
-namespace Firebot
+namespace Deskbot
 {
 
 class Core;
@@ -53,7 +53,7 @@ private:
 	uint8_t duelist_;
 
 	std::vector<uint8_t> answer_buffer_;
-	std::unique_ptr<Firebot::Core> core_;
+	std::unique_ptr<Deskbot::Core> core_;
 	std::unique_ptr<EncodeContext> ctx_;
 
 	auto send_msg_(YGOPro::CTOSMsg msg) noexcept -> void;
@@ -66,4 +66,4 @@ private:
 	auto analyze_(uint8_t const* buffer, size_t size) noexcept -> void;
 };
 
-#endif // EDOPRO_FIREBOT_CLIENT_HPP
+#endif // EDOPRO_DESKBOT_CLIENT_HPP

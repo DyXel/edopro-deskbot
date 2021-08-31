@@ -1,13 +1,13 @@
-project('edopro-firebot', 'cpp', license : 'AGPL-3.0-or-later', default_options : 'cpp_std=c++17')
+project('edopro-deskbot', 'cpp', license : 'AGPL-3.0-or-later', default_options : 'cpp_std=c++17')
 
 # ygopen_dep  = dependency('ygopen')
 boost_dep   = dependency('boost', version : '>=1.75')
-firebot_dep = dependency('firebot')
+deskbot_dep = dependency('deskbot')
 
-edopro_firebot_src = files([
+edopro_deskbot_src = files([
 	'src/client.cpp',
 	'src/encode_context.cpp',
 	'src/main.cpp'
 ])
 
-edopro_firebot_exe = executable('edopro-firebot', edopro_firebot_src, dependencies : [boost_dep, firebot_dep])
+edopro_deskbot_exe = executable('edopro-deskbot', edopro_deskbot_src, dependencies : [boost_dep, deskbot_dep])

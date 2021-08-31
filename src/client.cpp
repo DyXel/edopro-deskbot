@@ -8,7 +8,7 @@
 #include <boost/asio/read.hpp>
 #include <boost/asio/write.hpp>
 #include <cstdio>
-#include <firebot/api.hpp>
+#include <deskbot/api.hpp>
 #include <google/protobuf/arena.h>
 #include <ygopen/codec/edo9300_ocgcore_decode.hpp>
 #include <ygopen/codec/edo9300_ocgcore_encode.hpp>
@@ -20,7 +20,7 @@ constexpr size_t ANSWER_BUFFER_RESERVE = 1U << 8U;
 constexpr uint32_t HANDSHAKE = 4043399681U;
 constexpr auto CLIENT_VERSION = YGOPro::ClientVersion{{39U, 1U}, {9U, 0U}};
 
-auto log_cb(void*, Firebot::LogType lt, std::string_view str) noexcept -> void
+auto log_cb(void*, Deskbot::LogType lt, std::string_view str) noexcept -> void
 {
 	std::fprintf(stderr, "[%i] %s\n", static_cast<int>(lt), str.data());
 }
@@ -32,8 +32,8 @@ Client::Client(boost::asio::ip::tcp::socket socket, Options const& options)
 	, t0_count_(0)
 	, team_(0U)
 	, duelist_(0)
-	, core_(std::make_unique<Firebot::Core>(
-		  Firebot::Core::Options{false, log_cb, nullptr}))
+	, core_(std::make_unique<Deskbot::Core>(
+		  Deskbot::Core::Options{false, log_cb, nullptr}))
 {
 	answer_buffer_.reserve(ANSWER_BUFFER_RESERVE);
 	{

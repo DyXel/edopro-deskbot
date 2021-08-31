@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
-#ifndef EDOPRO_FIREBOT_CTOSMSG_HPP
-#define EDOPRO_FIREBOT_CTOSMSG_HPP
+#ifndef EDOPRO_DESKBOT_CTOSMSG_HPP
+#define EDOPRO_DESKBOT_CTOSMSG_HPP
 #include <array>
 #include <cassert>
 #include <cstddef> // size_t
@@ -191,4 +191,4 @@ private:
 
 } // namespace YGOPro
 
-#endif // EDOPRO_FIREBOT_CTOSMSG_HPP
+#endif // EDOPRO_DESKBOT_CTOSMSG_HPP

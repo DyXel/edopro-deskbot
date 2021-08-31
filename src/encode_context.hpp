@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
-#ifndef EDOPRO_FIREBOT_ENCODE_CONTEXT_HPP
-#define EDOPRO_FIREBOT_ENCODE_CONTEXT_HPP
+#ifndef EDOPRO_DESKBOT_ENCODE_CONTEXT_HPP
+#define EDOPRO_DESKBOT_ENCODE_CONTEXT_HPP
 #include <google/protobuf/arena.h>
 #include <ygopen/client/board.hpp>
 #include <ygopen/client/card.hpp>
@@ -46,4 +46,4 @@ private:
 	std::vector<Place> deferred_;
 };
 
-#endif // EDOPRO_FIREBOT_ENCODE_CONTEXT_HPP
+#endif // EDOPRO_DESKBOT_ENCODE_CONTEXT_HPP
