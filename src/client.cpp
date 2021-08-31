@@ -265,6 +265,10 @@ auto Client::analyze_(uint8_t const* buffer, size_t size) noexcept -> void
 	// NOTE: Assuming the server is sending one game message at the time.
 	google::protobuf::Arena arena;
 	using namespace YGOpen::Codec;
+	uint8_t const core_msg = *buffer;
+	assert(core_msg != 1U); // NOLINT: MSG_RETRY
+	if(core_msg == 3U) // NOLINT: MSG_WAITING
+		return;
 	auto const r = Edo9300::OCGCore::encode_one(arena, *ctx_, buffer);
 	switch(r.state)
 	{
@@ -275,7 +279,7 @@ auto Client::analyze_(uint8_t const* buffer, size_t size) noexcept -> void
 	}
 	case EncodeOneResult::State::UNKNOWN:
 	{
-		std::fprintf(stderr, "Regular encoding failed: %i.\n", *buffer);
+		std::fprintf(stderr, "Regular encoding failed: %i.\n", core_msg);
 		return;
 	}
 	default:
