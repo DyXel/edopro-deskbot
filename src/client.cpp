@@ -262,29 +262,24 @@ auto Client::analyze_(uint8_t const* buffer, size_t size) noexcept -> void
 		ctosmsg.write(answer_buffer_.data(), answer_buffer_.size());
 		send_msg_(ctosmsg);
 	};
+	// NOTE: Assuming the server is sending one game message at the time.
 	google::protobuf::Arena arena;
-	decltype(buffer) const sentry = buffer + size; // NOLINT
-	for(;;)
+	using namespace YGOpen::Codec;
+	auto const r = Edo9300::OCGCore::encode_one(arena, *ctx_, buffer);
+	switch(r.state)
 	{
-		if(sentry == buffer || sentry < (buffer + 3U)) // NOLINT
-			break;
-		using namespace YGOpen::Codec;
-		auto r = Edo9300::OCGCore::encode_one(arena, *ctx_, buffer);
-		switch(r.state)
-		{
-		case EncodeOneResult::State::OK:
-		{
-			analyze_and_answer(*r.msg);
-			break;
-		}
-		case EncodeOneResult::State::UNKNOWN:
-		{
-			std::fprintf(stderr, "Regular encoding failed: %i.\n", *buffer);
-			return;
-		}
-		default:
-			break;
-		}
-		buffer += r.bytes_read; // NOLINT
+	case EncodeOneResult::State::OK:
+	{
+		analyze_and_answer(*r.msg);
+		break;
 	}
+	case EncodeOneResult::State::UNKNOWN:
+	{
+		std::fprintf(stderr, "Regular encoding failed: %i.\n", *buffer);
+		return;
+	}
+	default:
+		break;
+	}
+	assert(r.bytes_read == size);
 }
