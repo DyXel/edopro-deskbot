@@ -15,6 +15,7 @@
 #include <ygopen/proto/duel/answer.hpp>
 
 #include "encode_context.hpp"
+#include "load_script.hpp"
 
 constexpr size_t ANSWER_BUFFER_RESERVE = 1U << 8U;
 constexpr uint32_t HANDSHAKE = 4043399681U;
@@ -33,7 +34,7 @@ Client::Client(boost::asio::ip::tcp::socket socket, Options const& options)
 	, team_(0U)
 	, duelist_(0)
 	, core_(std::make_unique<Deskbot::Core>(
-		  Deskbot::Core::Options{false, log_cb, nullptr}))
+		  Deskbot::Core::Options{log_cb, nullptr, load_script, nullptr}))
 {
 	answer_buffer_.reserve(ANSWER_BUFFER_RESERVE);
 	{
@@ -60,9 +61,10 @@ Client::Client(boost::asio::ip::tcp::socket socket, Options const& options)
 
 Client::~Client() = default;
 
-auto Client::process_script(std::string_view script) noexcept -> bool
+auto Client::process_script(std::string_view name,
+                            std::string_view buffer) noexcept -> bool
 {
-	return core_->process_script(script);
+	return core_->process_script(name, buffer);
 }
 
 auto Client::send_msg_(YGOPro::CTOSMsg msg) noexcept -> void

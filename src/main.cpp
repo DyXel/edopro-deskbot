@@ -11,6 +11,7 @@
 #include <optional>
 
 #include "client.hpp"
+#include "load_script.hpp"
 
 static std::array const infinitrains_deck{
 	51126152U, 51126152U, 51126152U, 87074380U, 87074380U, 52481437U, 52481437U,
@@ -23,23 +24,14 @@ static std::array const infinitrains_deck{
 	56910167U, 90162951U, 97584719U, 24701066U, 1'46'746U, 23689428U,
 };
 
-// Yoinked from: https://stackoverflow.com/a/116220
-auto read_file(std::string_view path) -> std::string
-{
-	constexpr auto read_size = std::size_t{4096};
-	auto stream = std::ifstream{path.data()};
-	stream.exceptions(std::ios_base::badbit);
-	auto out = std::string{""};
-	auto buf = std::string(read_size, '\0');
-	while(stream.read(&buf[0], read_size))
-		out.append(buf, 0, stream.gcount());
-	out.append(buf, 0, stream.gcount());
-	return out;
-}
-
 auto main(int argc, char* argv[]) -> int
 {
 	GOOGLE_PROTOBUF_VERIFY_VERSION;
+	if(argc != 2)
+	{
+		std::fprintf(stderr, "You need to pass a script file as 2nd arg.\n");
+		return 1;
+	}
 	auto const host = std::string_view("localhost");
 	auto const port = std::string_view("7911");
 	boost::asio::io_context io_context;
@@ -60,7 +52,8 @@ auto main(int argc, char* argv[]) -> int
 		std::fprintf(stderr, "Error while initializing client: %s\n", e.what());
 		return 1;
 	}
-	client->process_script(read_file(argv[argc - 1]));
+	auto const script_fn = std::string_view(argv[argc - 1]);
+	client->process_script(script_fn, load_script(nullptr, script_fn));
 	io_context.run();
 	google::protobuf::ShutdownProtobufLibrary();
 	return 0;
