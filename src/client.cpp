@@ -19,7 +19,7 @@
 
 constexpr size_t ANSWER_BUFFER_RESERVE = 1U << 8U;
 constexpr uint32_t HANDSHAKE = 4043399681U;
-constexpr auto CLIENT_VERSION = YGOPro::ClientVersion{{39U, 1U}, {9U, 0U}};
+constexpr auto CLIENT_VERSION = YGOPro::ClientVersion{{39U, 2U}, {9U, 0U}};
 
 auto log_cb(void*, Deskbot::LogType lt, std::string_view str) noexcept -> void
 {
