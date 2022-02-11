@@ -29,7 +29,7 @@ auto log_cb(void*, Deskbot::LogType lt, std::string_view str) noexcept -> void
 Client::Client(boost::asio::ip::tcp::socket socket, Options const& options)
 	: socket_(std::move(socket))
 	, deck_(options.deck_ptr, options.deck_ptr + options.deck_size)
-	, hosting_(false)
+	, hosting_(true)
 	, t0_count_(0)
 	, team_(0U)
 	, duelist_(0)
@@ -44,9 +44,17 @@ Client::Client(boost::asio::ip::tcp::socket socket, Options const& options)
 	}
 	if(hosting_)
 	{
+		static constexpr uint64_t DUEL_FLAGS = 4295157760U;
 		auto create_game = YGOPro::CTOSMsg::CreateGame{};
-		create_game.host_info.handshake = HANDSHAKE;
-		create_game.host_info.version = CLIENT_VERSION;
+		auto& hi = create_game.host_info;
+		hi.banlist_hash = 2512293045U; // "2022.02 TCG"
+		hi.allowed = 0x3U; // "OCG/TCG"
+		hi.starting_draw_count = 5U;
+		hi.draw_count_per_turn = 1U;
+		hi.duel_flags_high = DUEL_FLAGS >> 32U;
+		hi.handshake = HANDSHAKE;
+		hi.version = CLIENT_VERSION;
+		hi.duel_flags_low = DUEL_FLAGS & 0xFFFFFFFFU;
 		send_msg_(YGOPro::CTOSMsg::make_fixed(create_game));
 	}
 	else
