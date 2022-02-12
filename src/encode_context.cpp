@@ -37,9 +37,7 @@ auto EncodeContext::xyz_mat_defer(Place const& place) noexcept -> void
 
 auto EncodeContext::take_deferred_xyz_mat() noexcept -> std::vector<Place>
 {
-	decltype(deferred_) taken{};
-	std::swap(taken, deferred_);
-	return taken;
+	return std::exchange(deferred_, {});
 }
 
 auto EncodeContext::xyz_left(Place const& left, Place const& from) noexcept
