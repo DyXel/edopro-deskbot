@@ -1,6 +1,5 @@
 project('edopro-deskbot', 'cpp', license : 'AGPL-3.0-or-later', default_options : 'cpp_std=c++17')
 
-# ygopen_dep  = dependency('ygopen')
 boost_dep   = dependency('boost', version : '>=1.75')
 deskbot_dep = dependency('deskbot')
 thread_dep  = dependency('threads')

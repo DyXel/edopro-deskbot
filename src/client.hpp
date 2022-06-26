@@ -35,9 +35,9 @@ public:
 	~Client();
 
 	Client(const Client&) = delete;
-	constexpr Client(Client&&) noexcept = delete;
+	Client(Client&&) noexcept = delete;
 	auto operator=(const Client&) -> Client& = delete;
-	constexpr auto operator=(Client&&) noexcept -> Client& = delete;
+	auto operator=(Client&&) noexcept -> Client& = delete;
 
 	auto process_script(std::string_view name, std::string_view buffer) noexcept
 		-> bool;
