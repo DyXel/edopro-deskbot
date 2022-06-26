@@ -29,6 +29,7 @@ public:
 	{
 		uint32_t const* deck_ptr;
 		size_t deck_size;
+		std::string_view script;
 	};
 
 	Client(boost::asio::ip::tcp::socket socket, Options const& options);
@@ -38,9 +39,6 @@ public:
 	Client(Client&&) noexcept = delete;
 	auto operator=(const Client&) -> Client& = delete;
 	auto operator=(Client&&) noexcept -> Client& = delete;
-
-	auto process_script(std::string_view name, std::string_view buffer) noexcept
-		-> bool;
 
 private:
 	YGOPro::STOCMsg incoming_;
@@ -52,6 +50,8 @@ private:
 	uint8_t t0_count_;
 	uint8_t team_;
 	uint8_t duelist_;
+
+	std::string_view script_;
 
 	std::vector<uint8_t> answer_buffer_;
 	std::unique_ptr<Deskbot::Core> core_;

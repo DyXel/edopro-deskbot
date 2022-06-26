@@ -33,8 +33,7 @@ Client::Client(boost::asio::ip::tcp::socket socket, Options const& options)
 	, t0_count_(0)
 	, team_(0U)
 	, duelist_(0)
-	, core_(std::make_unique<Deskbot::Core>(
-		  Deskbot::Core::Options{log_cb, nullptr, load_script, nullptr}))
+	, script_(options.script)
 {
 	answer_buffer_.reserve(ANSWER_BUFFER_RESERVE);
 	{
@@ -68,12 +67,6 @@ Client::Client(boost::asio::ip::tcp::socket socket, Options const& options)
 }
 
 Client::~Client() = default;
-
-auto Client::process_script(std::string_view name,
-                            std::string_view buffer) noexcept -> bool
-{
-	return core_->process_script(name, buffer);
-}
 
 auto Client::send_msg_(YGOPro::CTOSMsg msg) noexcept -> void
 {
@@ -223,6 +216,9 @@ auto Client::handle_msg_() noexcept -> bool
 	}
 	case STOCMsg::IdType::DUEL_START:
 	{
+		core_ = std::make_unique<Deskbot::Core>(
+			Deskbot::Core::Options{log_cb, nullptr, load_script, nullptr});
+		core_->process_script(script_, load_script(nullptr, script_));
 		core_->call_initialize();
 		ctx_ = std::make_unique<EncodeContext>();
 		return true;

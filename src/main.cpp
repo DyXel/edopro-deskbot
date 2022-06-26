@@ -38,7 +38,9 @@ auto main(int argc, char* argv[]) -> int
 		auto endpoints = resolver.resolve(host, port);
 		boost::asio::ip::tcp::socket socket(io_context);
 		boost::asio::connect(socket, endpoints);
-		client.emplace(std::move(socket), Client::Options{d.data(), d.size()});
+		client.emplace(
+			std::move(socket),
+			Client::Options{d.data(), d.size(), std::string_view(argv[2])});
 	}
 	catch(std::exception& e)
 	{
@@ -46,8 +48,6 @@ auto main(int argc, char* argv[]) -> int
 		std::fprintf(stderr, "Error while initializing client: %s\n", e.what());
 		return 1;
 	}
-	auto const script_fn = std::string_view(argv[2]);
-	client->process_script(script_fn, load_script(nullptr, script_fn));
 	io_context.run();
 	google::protobuf::ShutdownProtobufLibrary();
 	return 0;
