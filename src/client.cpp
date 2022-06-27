@@ -47,7 +47,7 @@ Client::Client(boost::asio::ip::tcp::socket socket, Options const& options)
 		auto create_game = YGOPro::CTOSMsg::CreateGame{};
 		auto& hi = create_game.host_info;
 		hi.banlist_hash = 186804830U; // "2022.5 TCG"
-		hi.allowed = 0x3U; // "OCG/TCG"
+		hi.allowed = 0x3U;            // "OCG/TCG"
 		hi.starting_draw_count = 5U;
 		hi.draw_count_per_turn = 1U;
 		hi.duel_flags_high = DUEL_FLAGS >> 32U;
