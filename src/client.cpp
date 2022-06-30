@@ -150,7 +150,7 @@ auto Client::handle_msg_() noexcept -> bool
 		analyze_(incoming_.body_data(), incoming_.body_size());
 		return true;
 	}
-	case STOCMsg::IdType::ERROR:
+	case STOCMsg::IdType::ERROR_MSG:
 	{
 		if(incoming_.body_size() == sizeof(STOCMsg::Error))
 		{

@@ -22,7 +22,7 @@ public:
 	enum class IdType : uint8_t
 	{
 		GAME_MSG = 0x1,
-		ERROR = 0x2,
+		ERROR_MSG = 0x2,
 		CHOOSE_RPS = 0x3,
 		CHOOSE_ORDER = 0x4,
 		// RPS_RESULT    = 0x5,
@@ -52,14 +52,14 @@ public:
 
 	struct Error
 	{
-		static constexpr auto ID = IdType::ERROR;
+		static constexpr auto ID = IdType::ERROR_MSG;
 		uint8_t msg;
 		uint32_t code;
 	};
 
 	struct DeckError
 	{
-		static constexpr auto ID = IdType::ERROR;
+		static constexpr auto ID = IdType::ERROR_MSG;
 		uint8_t msg;
 		uint32_t type;
 		struct
