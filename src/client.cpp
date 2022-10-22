@@ -19,7 +19,7 @@
 
 constexpr size_t ANSWER_BUFFER_RESERVE = 1U << 8U;
 constexpr uint32_t HANDSHAKE = 4043399681U;
-constexpr auto CLIENT_VERSION = YGOPro::ClientVersion{{39U, 3U}, {9U, 1U}};
+constexpr auto CLIENT_VERSION = YGOPro::ClientVersion{{40U, 0U}, {10U, 0U}};
 
 auto log_cb(void*, Deskbot::LogType lt, std::string_view str) noexcept -> void
 {
@@ -46,7 +46,7 @@ Client::Client(boost::asio::ip::tcp::socket socket, Options const& options)
 		static constexpr uint64_t DUEL_FLAGS = 4295157760U;
 		auto create_game = YGOPro::CTOSMsg::CreateGame{};
 		auto& hi = create_game.host_info;
-		hi.banlist_hash = 186804830U; // "2022.5 TCG"
+		hi.banlist_hash = 0U;
 		hi.allowed = 0x3U;            // "OCG/TCG"
 		hi.starting_draw_count = 5U;
 		hi.draw_count_per_turn = 1U;
@@ -54,6 +54,9 @@ Client::Client(boost::asio::ip::tcp::socket socket, Options const& options)
 		hi.handshake = HANDSHAKE;
 		hi.version = CLIENT_VERSION;
 		hi.duel_flags_low = DUEL_FLAGS & 0xFFFFFFFFU;
+		hi.limits.main = {40U, 60U};
+		hi.limits.side = {0U, 15U};
+		hi.limits.extra = {0U, 15U};
 		send_msg_(YGOPro::CTOSMsg::make_fixed(create_game));
 	}
 	else

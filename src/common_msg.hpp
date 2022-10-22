@@ -19,13 +19,21 @@ struct ClientVersion
 	} client, core;
 };
 
+struct DeckLimits
+{
+	struct Boundary
+	{
+		uint16_t min, max;
+	}main, extra, side;
+};
+
 struct HostInfo
 {
 	uint32_t banlist_hash;
 	uint8_t allowed;
 	uint8_t mode;      // NOTE: UNUSED
 	uint8_t duel_rule; // NOTE: UNUSED
-	uint8_t dont_check_deck;
+	uint8_t dont_check_deck_content;
 	uint8_t dont_shuffle_deck;
 	uint32_t starting_lp;
 	uint8_t starting_draw_count;
@@ -40,6 +48,7 @@ struct HostInfo
 	uint32_t duel_flags_low;
 	int32_t forbidden_types;
 	uint16_t extra_rules;
+	DeckLimits limits;
 };
 
 } // namespace YGOPro
