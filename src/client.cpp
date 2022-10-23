@@ -47,7 +47,7 @@ Client::Client(boost::asio::ip::tcp::socket socket, Options const& options)
 		auto create_game = YGOPro::CTOSMsg::CreateGame{};
 		auto& hi = create_game.host_info;
 		hi.banlist_hash = 0U;
-		hi.allowed = 0x3U;            // "OCG/TCG"
+		hi.allowed = 0x3U; // "OCG/TCG"
 		hi.starting_draw_count = 5U;
 		hi.draw_count_per_turn = 1U;
 		hi.duel_flags_high = DUEL_FLAGS >> 32U;
@@ -80,7 +80,7 @@ auto Client::send_msg_(YGOPro::CTOSMsg msg) noexcept -> void
 	// No need for std::move as long as type is trivially copyable.
 	static_assert(std::is_trivially_copyable_v<YGOPro::CTOSMsg>);
 #endif
-	const bool write_in_progress = !outgoing_.empty();
+	bool const write_in_progress = !outgoing_.empty();
 	outgoing_.emplace(msg);
 	if(!write_in_progress)
 		do_write_();
