@@ -1,0 +1,8 @@
+[submodule "subprojects/ygopen"]
+	path = subprojects/ygopen
+	url = https://github.com/DyXel/ygopen
+	branch = master
+[submodule "subprojects/deskbot"]
+	path = subprojects/deskbot
+	url = https://github.com/DyXel/deskbot
+	branch = master

@@ -19,7 +19,7 @@
 
 constexpr size_t ANSWER_BUFFER_RESERVE = 1U << 8U;
 constexpr uint32_t HANDSHAKE = 4043399681U;
-constexpr auto CLIENT_VERSION = YGOPro::ClientVersion{{40U, 0U}, {10U, 0U}};
+constexpr auto CLIENT_VERSION = YGOPro::ClientVersion{{40U, 1U}, {10U, 0U}};
 
 auto log_cb(void*, Deskbot::LogType lt, std::string_view str) noexcept -> void
 {
@@ -49,6 +49,8 @@ Client::Client(boost::asio::ip::tcp::socket socket, Options const& options)
 		hi.banlist_hash = 0U;
 		hi.allowed = 0x3U; // "OCG/TCG"
 		hi.starting_draw_count = 5U;
+		hi.dont_check_deck_content = 1U;
+		hi.dont_shuffle_deck = 0U;
 		hi.draw_count_per_turn = 1U;
 		hi.duel_flags_high = DUEL_FLAGS >> 32U;
 		hi.handshake = HANDSHAKE;
