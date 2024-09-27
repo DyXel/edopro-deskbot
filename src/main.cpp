@@ -17,6 +17,10 @@
 auto main(int argc, char* argv[]) -> int
 {
 	GOOGLE_PROTOBUF_VERIFY_VERSION;
+	struct _
+	{
+		~_() { google::protobuf::ShutdownProtobufLibrary(); }
+	} on_exit;
 	if(argc != 3)
 	{
 		std::fprintf(stderr, "You need to pass a ydk file as 2nd arg.\n");
@@ -44,11 +48,9 @@ auto main(int argc, char* argv[]) -> int
 	}
 	catch(std::exception& e)
 	{
-		google::protobuf::ShutdownProtobufLibrary();
 		std::fprintf(stderr, "Error while initializing client: %s\n", e.what());
 		return 1;
 	}
 	io_context.run();
-	google::protobuf::ShutdownProtobufLibrary();
 	return 0;
 }
