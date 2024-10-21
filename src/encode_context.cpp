@@ -1,4 +1,12 @@
+/*
+ * Copyright (c) 2024, Dylam De La Torre <dyxel04@gmail.com>
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
 #include "encode_context.hpp"
+
+#include <ygopen/client/parse_event.hpp>
+#include <ygopen/client/parse_query.hpp>
 
 EncodeContext::EncodeContext() noexcept : match_win_reason_(0)
 {}
@@ -40,8 +48,8 @@ auto EncodeContext::take_deferred_xyz_mat() noexcept -> std::vector<Place>
 	return std::exchange(deferred_, {});
 }
 
-auto EncodeContext::xyz_left(Place const& left, Place const& from) noexcept
-	-> void
+auto EncodeContext::xyz_left(Place const& left,
+                             Place const& from) noexcept -> void
 {
 	left_[left] = from;
 }
@@ -51,5 +59,5 @@ auto EncodeContext::parse(YGOpen::Proto::Duel::Msg const& msg) noexcept -> void
 	if(msg.t_case() == YGOpen::Proto::Duel::Msg::kEvent)
 		parse_event(board_, msg.event());
 	for(auto const& query : msg.queries())
-		parse_query(board_.frame(), query);
+		static_cast<void>(YGOpen::Client::parse_query(board_.frame(), query));
 }

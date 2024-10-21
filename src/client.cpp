@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Dylam De La Torre <dyxel04@gmail.com>
+ * Copyright (c) 2024, Dylam De La Torre <dyxel04@gmail.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
@@ -13,6 +13,7 @@
 #include <ygopen/codec/edo9300_ocgcore_decode.hpp>
 #include <ygopen/codec/edo9300_ocgcore_encode.hpp>
 #include <ygopen/proto/duel/answer.hpp>
+#include <ygopen/proto/duel/msg.hpp>
 
 #include "encode_context.hpp"
 #include "load_script.hpp"

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Dylam De La Torre <dyxel04@gmail.com>
+ * Copyright (c) 2024, Dylam De La Torre <dyxel04@gmail.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
@@ -24,7 +24,7 @@ struct DeckLimits
 	struct Boundary
 	{
 		uint16_t min, max;
-	}main, extra, side;
+	} main, extra, side;
 };
 
 struct HostInfo
