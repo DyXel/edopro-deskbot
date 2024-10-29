@@ -6,7 +6,6 @@ thread_dep  = dependency('threads')
 
 edopro_deskbot_src = files([
 	'src/client.cpp',
-	'src/encode_context.cpp',
 	'src/load_script.cpp',
 	'src/main.cpp'
 ])

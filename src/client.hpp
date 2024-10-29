@@ -18,9 +18,14 @@ namespace Deskbot
 
 class Core;
 
-}
+} // namespace Deskbot
 
-class EncodeContext;
+namespace YGOpen::Server
+{
+
+class BasicEncodeContext;
+
+} // namespace YGOpen::Server
 
 class Client
 {
@@ -55,7 +60,7 @@ private:
 
 	std::vector<uint8_t> answer_buffer_;
 	std::unique_ptr<Deskbot::Core> core_;
-	std::unique_ptr<EncodeContext> ctx_;
+	std::unique_ptr<YGOpen::Server::BasicEncodeContext> ctx_;
 
 	auto send_msg_(YGOPro::CTOSMsg msg) noexcept -> void;
 	auto do_write_() noexcept -> void;

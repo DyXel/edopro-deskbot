@@ -14,8 +14,8 @@
 #include <ygopen/codec/edo9300_ocgcore_encode.hpp>
 #include <ygopen/proto/duel/answer.hpp>
 #include <ygopen/proto/duel/msg.hpp>
+#include <ygopen/server/basic_encode_context.hpp>
 
-#include "encode_context.hpp"
 #include "load_script.hpp"
 
 constexpr size_t ANSWER_BUFFER_RESERVE = 1U << 8U;
@@ -226,7 +226,7 @@ auto Client::handle_msg_() noexcept -> bool
 			Deskbot::Core::Options{log_cb, nullptr, load_script, nullptr});
 		core_->process_script(script_, load_script(nullptr, script_));
 		core_->call_initialize();
-		ctx_ = std::make_unique<EncodeContext>();
+		ctx_ = std::make_unique<YGOpen::Server::BasicEncodeContext>();
 		return true;
 	}
 	case STOCMsg::IdType::DUEL_END:
